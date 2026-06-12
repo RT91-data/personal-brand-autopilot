@@ -28,6 +28,7 @@ Agent 3: Voice Guardian — applies your voice, removes generic AI language
 Quality Scorer — scores 4 dimensions, flags weak posts
 ↓
 Notion Content Calendar — saved with topic, date, image suggestion
+
 ---
 
 ## Tech stack
@@ -74,6 +75,7 @@ streamlit run app.py
 ---
 
 ## Project structure
+
 personal-brand-autopilot/
 ├── app.py                 # Main Streamlit UI
 ├── post_generator.py      # 3-agent pipeline
