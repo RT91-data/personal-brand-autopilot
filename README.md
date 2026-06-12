@@ -18,28 +18,16 @@ Turns learning notes into market-standard LinkedIn posts — automatically, in y
 
 ## How it works
 GitHub Notebooks
-
 ↓
-
 Agent 1: Drafter — extracts best angle, generates own examples
-
 ↓
-
 Agent 2: LinkedIn Strategist — structures for maximum performance
-
 ↓
-
 Agent 3: Voice Guardian — applies your voice, removes generic AI language
-
 ↓
-
 Quality Scorer — scores 4 dimensions, flags weak posts
-
 ↓
-
 Notion Content Calendar — saved with topic, date, image suggestion
-
-
 ---
 
 ## Tech stack
