@@ -90,12 +90,87 @@ else:
 
         if st.button("✨ Generate Post", type="primary", use_container_width=True):
             if content:
-                with st.spinner("Running 3-agent pipeline... this takes 15-20 seconds..."):
-                    post, scores = generate_linkedin_post(
-                        selected["display_name"],
-                        content,
-                        is_first_post=is_first_post
-                    )
+                max_attempts = 3
+                attempt = 0
+                
+                while attempt < max_attempts:
+                    attempt += 1
+                    
+                    progress_placeholder = st.empty()
+                    
+                    import threading
+                    import time
+                    
+                    result = {"post": None, "scores": None, "done": False}
+                    
+                    def run_gen():
+                        result["post"], result["scores"] = generate_linkedin_post(
+                            selected["display_name"],
+                            content,
+                            is_first_post=is_first_post
+                        )
+                        result["done"] = True
+                    
+                    thread = threading.Thread(target=run_gen)
+                    thread.start()
+                    
+                    messages = [
+                        (0,  "🔍 Agent 0: Searching what D365 practitioners are discussing this week..."),
+                        (6,  "✍️  Agent 1: Drafting raw insights and real D365 scenarios..."),
+                        (14, "📐 Agent 2: Structuring for LinkedIn performance..."),
+                        (20, "🎯 Agent 3: Applying your voice and senior consultant tone..."),
+                        (26, "📊 Agent 4: Scoring post quality across 4 dimensions..."),
+                    ]
+                    
+                    start = time.time()
+                    msg_index = 0
+                    
+                    while not result["done"]:
+                        elapsed = time.time() - start
+                        while msg_index < len(messages) and elapsed >= messages[msg_index][0]:
+                            progress_placeholder.info(messages[msg_index][1])
+                            msg_index += 1
+                        time.sleep(0.3)
+                    
+                    thread.join()
+                    progress_placeholder.empty()
+                    
+                    post = result["post"]
+                    scores = result["scores"]
+                    
+                    # Check if any score is below 7
+                    weak_scores = {k: v for k, v in scores.items() 
+                                   if k in ["hook_strength", "d365_specificity", "uniqueness", "impression"] 
+                                   and isinstance(v, (int, float)) and v < 7}
+                    
+                    if not weak_scores:
+                        # All scores 7 or above — accept
+                        st.toast(f"✅ Post passed quality check on attempt {attempt}", icon="✅")
+                        break
+                    elif attempt < max_attempts:
+                        # Weak scores found — auto retry with feedback
+                        weak_names = ", ".join([k.replace("_", " ") for k in weak_scores.keys()])
+                        auto_feedback = scores.get("one_line_fix", f"Improve weak areas: {weak_names}")
+                        st.toast(f"⚠️ Weak scores in: {weak_names}. Auto-retrying with scorer feedback...", icon="⚠️")
+                        # Pass scorer feedback into next attempt
+                        post, scores = generate_linkedin_post(
+                            selected["display_name"],
+                            content,
+                            is_first_post=is_first_post,
+                            feedback=auto_feedback
+                        )
+                        # Check again
+                        weak_scores = {k: v for k, v in scores.items()
+                                      if k in ["hook_strength", "d365_specificity", "uniqueness", "impression"]
+                                      and isinstance(v, (int, float)) and v < 7}
+                        if not weak_scores:
+                            st.toast(f"✅ Post passed quality check on attempt {attempt + 1}", icon="✅")
+                            break
+                    else:
+                        # Max attempts reached — show best result
+                        weak_names = ", ".join([k.replace("_", " ") for k in weak_scores.keys()])
+                        st.warning(f"⚠️ Could not achieve all scores above 7 after {max_attempts} attempts. Showing best result. Weak areas: {weak_names}")
+                
                 st.session_state["generated_post"] = post
                 st.session_state["post_scores"] = scores
             else:
@@ -135,19 +210,26 @@ else:
                     st.success(f"✅ Strong post — average score {avg}/10. Ready to publish.")
                 elif avg >= 6:
                     st.warning(f"⚠️ Decent post — average {avg}/10. Consider regenerating.")
-                    if scores.get('one_line_fix'):
-                        st.caption(f"Suggestion: {scores.get('one_line_fix')}")
                 else:
                     st.error(f"❌ Weak post — average {avg}/10. Regenerate before posting.")
-                    if scores.get('one_line_fix'):
-                        st.caption(f"Fix: {scores.get('one_line_fix')}")
+
+                # Always show weakest element and fix suggestion
+                if scores.get('weakest_element') and scores.get('one_line_fix'):
+                    st.info(f"💡 Weakest: **{scores.get('weakest_element').replace('_', ' ').title()}** — {scores.get('one_line_fix')}")
 
             st.divider()
 
             # Feedback section
             st.markdown("**Not quite right? Give feedback:**")
+            
+            # Pre-fill with scorer suggestion if available
+            scorer_suggestion = ""
+            if "post_scores" in st.session_state:
+                scorer_suggestion = st.session_state["post_scores"].get("one_line_fix", "")
+            
             feedback = st.text_input(
-                "e.g. 'too long', 'not my voice', 'make it simpler', 'stronger hook'",
+                "Edit or replace the scorer's suggestion, or type your own:",
+                value=scorer_suggestion,
                 key="feedback_input"
             )
 

@@ -3,3 +3,4 @@ streamlit==1.58.0
 requests==2.34.2
 python-dotenv==1.2.2
 notion-client==2.2.1
+langfuse==4.7.1
