@@ -85,13 +85,13 @@ Approved post saved with scheduled date, image suggestion, and quality scores fo
     LANGFUSE_HOST=https://cloud.langfuse.com
 
 **Where to get each key:**
-    - `ANTHROPIC_API_KEY` — console.anthropic.com → API Keys
-    - `GITHUB_USERNAME` — your GitHub username
-    - `GITHUB_REPO` — your learning notes repo name
-    - `NOTION_API_KEY` — notion.so/my-integrations → create integration → copy token
-    - `NOTION_DATABASE_ID` — from your Notion LinkedIn Content Calendar database URL
-    - `LANGFUSE_PUBLIC_KEY` and `LANGFUSE_SECRET_KEY` — cloud.langfuse.com → project settings → API Keys
-    - `LANGFUSE_HOST` — always `https://cloud.langfuse.com` unless self-hosting
+- `ANTHROPIC_API_KEY` — console.anthropic.com → API Keys
+- `GITHUB_USERNAME` — your GitHub username
+- `GITHUB_REPO` — your learning notes repo name
+- `NOTION_API_KEY` — notion.so/my-integrations → create integration → copy token
+- `NOTION_DATABASE_ID` — from your Notion LinkedIn Content Calendar database URL
+- `LANGFUSE_PUBLIC_KEY` and `LANGFUSE_SECRET_KEY` — cloud.langfuse.com → project settings → API Keys
+- `LANGFUSE_HOST` — always `https://cloud.langfuse.com` unless self-hosting
 
 **5. Run the app**
 
