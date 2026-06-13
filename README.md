@@ -1,4 +1,4 @@
-✍️ Personal Brand Autopilot
+# ✍️ Personal Brand Autopilot
 
 An AI-powered LinkedIn content generator built for D365/ERP consultants transitioning into AI Engineering.
 
@@ -9,7 +9,7 @@ Turns learning notes into market-standard LinkedIn posts — automatically, in y
 ## What it does
 
 - Reads learning notebooks directly from your GitHub repository
-- Runs a 3-agent AI pipeline to generate LinkedIn posts
+- Runs multi-step LLM pipeline with an agentic research step and LLM-as-judge evaluation to generate LinkedIn posts
 - Scores each post on hook strength, D365 specificity, uniqueness, and impression
 - Accepts feedback and regenerates until the post meets your standard
 - Saves approved posts to a Notion content calendar with scheduled dates
@@ -17,73 +17,99 @@ Turns learning notes into market-standard LinkedIn posts — automatically, in y
 ---
 
 ## How it works
-GitHub Notebooks
+User picks topic from GitHub learning notebooks
 ↓
-Agent 1: Drafter — extracts best angle, generates own examples
+Agent 0: Trend Spotter (agentic — uses web search)
+Finds what D365/AI practitioners are discussing this week.
+Surfaces recent Microsoft announcements and current debates.
 ↓
-Agent 2: LinkedIn Strategist — structures for maximum performance
+Agent 1: Drafter (LLM)
+Generates raw insights and D365 scenarios from scratch.
+Uses trend context to make the post timely. Never copies notebook content.
 ↓
-Agent 3: Voice Guardian — applies your voice, removes generic AI language
+Agent 2: LinkedIn Strategist (LLM)
+Restructures draft for maximum LinkedIn performance.
+Applies story-first hook formula and mobile-first formatting.
 ↓
-Quality Scorer — scores 4 dimensions, flags weak posts
+Agent 3: Voice Guardian (LLM)
+Applies Rupam's voice — senior consultant, not student.
+Removes generic AI language, corporate buzzwords, motivational content.
 ↓
-Notion Content Calendar — saved with topic, date, image suggestion
+Agent 4: Quality Scorer (LLM-as-judge)
+Scores post on 4 dimensions: hook, D365 specificity, uniqueness, impression.
+Auto-retries pipeline if any score below 7.
+↓
+Notion Content Calendar
+Saved with scheduled date, image suggestion, quality scores.
+
+**Auto-retry:** If any quality score is below 7, the pipeline reruns automatically with the scorer's feedback — up to 3 attempts.
+
+**Observability:** Every pipeline run is traced in Langfuse — latency, token usage, and scores per agent.
 
 ---
 
 ## Tech stack
 
-- Python
-- Streamlit — UI
-- Anthropic Claude API — 3-agent pipeline
-- GitHub API — reads learning notebooks
-- Notion API — content calendar
+- **Python** — core language
+- **Streamlit** — UI
+- **Anthropic Claude API** — 3-agent pipeline
+- **GitHub API** — reads learning notebooks
+- **Notion API** — content calendar
 
 ---
 
 ## Setup
 
-**1. Clone the repo:**
-```bash
-git clone https://github.com/RT91-data/personal-brand-autopilot.git
-cd personal-brand-autopilot
-```
+**1. Clone the repo**
 
-**2. Create virtual environment:**
-```bash
-python -m venv venv
-venv\Scripts\activate
-```
+    git clone https://github.com/RT91-data/personal-brand-autopilot.git
+    cd personal-brand-autopilot
 
-**3. Install dependencies:**
-```bash
-pip install -r requirements.txt
-```
+**2. Create virtual environment**
 
-**4. Create `.env` file:**
-ANTHROPIC_API_KEY=your_anthropic_api_key
-GITHUB_USERNAME=your_github_username
-GITHUB_REPO=your_learning_notes_repo
-NOTION_API_KEY=your_notion_integration_token
-NOTION_DATABASE_ID=your_notion_database_id
+    python -m venv venv
+    venv\Scripts\activate
 
-**5. Run the app:**
-```bash
-streamlit run app.py
-```
+**3. Install dependencies**
+
+    pip install -r requirements.txt
+
+**4. Create .env file**
+
+    ANTHROPIC_API_KEY=your_anthropic_api_key
+    GITHUB_USERNAME=your_github_username
+    GITHUB_REPO=your_learning_notes_repo
+    NOTION_API_KEY=your_notion_integration_token
+    NOTION_DATABASE_ID=your_notion_database_id
+    LANGFUSE_PUBLIC_KEY=your_langfuse_public_key
+    LANGFUSE_SECRET_KEY=your_langfuse_secret_key
+    LANGFUSE_HOST=https://cloud.langfuse.com
+
+    **Where to get each key:**
+    - `ANTHROPIC_API_KEY` — console.anthropic.com → API Keys
+    - `GITHUB_USERNAME` — your GitHub username
+    - `GITHUB_REPO` — your learning notes repo name
+    - `NOTION_API_KEY` — notion.so/my-integrations → create integration → copy token
+    - `NOTION_DATABASE_ID` — from your Notion LinkedIn Content Calendar database URL
+    - `LANGFUSE_PUBLIC_KEY` and `LANGFUSE_SECRET_KEY` — cloud.langfuse.com → project settings → API Keys
+    - `LANGFUSE_HOST` — always `https://cloud.langfuse.com` unless self-hosting
+
+**5. Run the app**
+
+    streamlit run app.py
 
 ---
 
 ## Project structure
 
-personal-brand-autopilot/
-├── app.py                 # Main Streamlit UI
-├── post_generator.py      # 3-agent pipeline
-├── github_reader.py       # GitHub API integration
-├── notion_saver.py        # Notion API integration
-├── requirements.txt
-├── .gitignore
-└── README.md
+    personal-brand-autopilot/
+    ├── app.py                 # Main Streamlit UI
+    ├── post_generator.py      # 3-agent pipeline
+    ├── github_reader.py       # GitHub API integration
+    ├── notion_saver.py        # Notion API integration
+    ├── requirements.txt
+    ├── .gitignore
+    └── README.md
 
 ---
 
@@ -91,8 +117,8 @@ personal-brand-autopilot/
 
 | Topic | Score | Status |
 |-------|-------|--------|
-| What is Machine Learning | 9.5/10 | Ready to post |
-| Supervised vs Unsupervised | 10/10 | Ready to post |
+| What is Machine Learning | 9/10 | Ready to post |
+| Supervised vs Unsupervised | 8/10 | Ready to post |
 
 ---
 
