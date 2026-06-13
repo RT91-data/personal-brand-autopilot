@@ -17,34 +17,33 @@ Turns learning notes into market-standard LinkedIn posts — automatically, in y
 ---
 
 ## How it works
-User picks topic from GitHub learning notebooks
-↓
-Agent 0: Trend Spotter (agentic — uses web search)
-Finds what D365/AI practitioners are discussing this week.
-Surfaces recent Microsoft announcements and current debates.
-↓
-Agent 1: Drafter (LLM)
-Generates raw insights and D365 scenarios from scratch.
-Uses trend context to make the post timely. Never copies notebook content.
-↓
-Agent 2: LinkedIn Strategist (LLM)
-Restructures draft for maximum LinkedIn performance.
-Applies story-first hook formula and mobile-first formatting.
-↓
-Agent 3: Voice Guardian (LLM)
-Applies Rupam's voice — senior consultant, not student.
-Removes generic AI language, corporate buzzwords, motivational content.
-↓
-Agent 4: Quality Scorer (LLM-as-judge)
-Scores post on 4 dimensions: hook, D365 specificity, uniqueness, impression.
-Auto-retries pipeline if any score below 7.
-↓
-Notion Content Calendar
-Saved with scheduled date, image suggestion, quality scores.
 
-**Auto-retry:** If any quality score is below 7, the pipeline reruns automatically with the scorer's feedback — up to 3 attempts.
+**Step 1 — Topic Selection**
+User picks a topic from GitHub learning notebooks. Each notebook contains concept notes, D365 analogies, and post ideas built during the learning journey.
 
-**Observability:** Every pipeline run is traced in Langfuse — latency, token usage, and scores per agent.
+**Step 2 — Agent 0: Trend Spotter** *(agentic — uses web search)*
+Searches what D365/AI practitioners are discussing this week. Surfaces recent Microsoft announcements and current debates to make the post timely, not just educational.
+
+**Step 3 — Agent 1: Drafter** *(LLM)*
+Generates raw insights and D365 scenarios from scratch using trend context as briefing. Never copies notebook content — the notes are context, not script.
+
+**Step 4 — Agent 2: LinkedIn Strategist** *(LLM)*
+Restructures draft for maximum LinkedIn performance. Applies story-first hook formula, mobile-first formatting, 150-200 word target.
+
+**Step 5 — Agent 3: Voice Guardian** *(LLM)*
+Applies Rupam's voice — senior consultant, not student. Removes generic AI language, corporate buzzwords, and motivational content.
+
+**Step 6 — Agent 4: Quality Scorer** *(LLM-as-judge)*
+Scores post on 4 dimensions: hook strength, D365 specificity, uniqueness, impression. Auto-retries full pipeline if any score is below 7 — up to 3 attempts.
+
+**Step 7 — Notion Content Calendar**
+Approved post saved with scheduled date, image suggestion, and quality scores for tracking over time.
+
+---
+
+**Auto-retry:** If any quality score is below 7, the pipeline reruns automatically with the scorer's fix suggestion as feedback — up to 3 attempts.
+
+**Observability:** Every pipeline run traced in Langfuse — per-agent latency, token usage, and quality scores.
 
 ---
 
@@ -85,7 +84,7 @@ Saved with scheduled date, image suggestion, quality scores.
     LANGFUSE_SECRET_KEY=your_langfuse_secret_key
     LANGFUSE_HOST=https://cloud.langfuse.com
 
-    **Where to get each key:**
+**Where to get each key:**
     - `ANTHROPIC_API_KEY` — console.anthropic.com → API Keys
     - `GITHUB_USERNAME` — your GitHub username
     - `GITHUB_REPO` — your learning notes repo name
